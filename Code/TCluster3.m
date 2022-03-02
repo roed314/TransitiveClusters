@@ -1,4 +1,32 @@
-// ls DATA/hashclusters/active | parallel -j96 --timeout 900 magma hsh:="{1}" timeout:=900 TCluster3.m
+/*****************************************************************************************************
+This file applies a randomized strategy to find isomorphisms between groups in a cluster.
+As an example, 40T194505 and 40T195727 have the same hash (in fact, they end up abstractly isomorphic)
+If we compute a random index-40 core-free subgroup H of 40T194505, we can use TransitiveGroupIdentification
+on the induced permutation representation.  Some of the time, we'll get 195727 out, thus exhibiting an
+isomorphism between the two permutation groups.  This randomized strategy is often much faster than
+falling back on IsIsomorphic.
+
+We will iteratively build up an index-40 core-free subgroup as follows.  At each stage, H is the
+subgroup under construction, N is its normalizer and G the ambient group.  We start with H = {1}.
+1. If H != N, choose a random g in N and set K = <H, g>.
+   a) If the index of K is not divisible by 40, replace g with an appropriate power and set K = <H, g>
+   b) While [N_G(K) : K] is prime, set K = N_G(K) (since this is the only way to enlarge K within its normalizer)
+   c) If K has trivial core, set H = K and proceed; otherwise choose another random g.
+2. If H = N or step 1 has failed too many times, instead just choose random g in G until <H, g> is core-free
+   with index divisible by 40.
+
+The current version can probably be improved; it failed to find isomorphisms in some cases that should
+have been possible:
+40T271235 = 40T272233
+40T271277 = 40T272110
+44T1780 = 44T1783
+40T308155 = 40T308167
+40T308164 = 40T308166
+
+USAGE:
+
+ls DATA/hashclusters/active | parallel -j96 --timeout 900 magma hsh:="{1}" timeout:=900 TCluster3.m
+*****************************************************************************************************/
 
 SMALL_TRIES := 40;
 function SmallJump(G, H, N, M)
