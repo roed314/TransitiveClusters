@@ -1,6 +1,31 @@
-AttachSpec("hashspec");
+/*****************************************************************************************************
+This file uses Magma's Subgroups function to find all core-free subgroups of an appropriate index,
+and the TransitiveGroupIdentification function to determine the transitive labels of groups within the
+isomorphism class.  It is often slower than FullIsoTest.m and can take a lot of memory for large groups,
+but it does provide additional information (the counts of the number of siblings).
 
-// ls DATA/hashclusters/active | parallel -j24 --timeout 3600 --memfree 100G --joblog DATA/hashclusters/sibs.log magma hsh:="{1}" AddTHashes5.m
+USAGE:
+
+ls DATA/active | parallel -j24 --timeout 3600 --memfree 100G --joblog DATA/sibs.log magma hsh:="{1}" FullSibSplit.m
+
+INPUT:
+
+You should provide a variable `hsh` at the command line: the order and hash value, separated by a period.
+
+For simplicity, the code currently assumes that the input clusters all consist of transitive groups of a single degree
+(except that in some cases every row has a group of degree 40 even though some also have groups of degree 20).
+If this assumption is not satisfied it will currently raise an assertion error, but it should be fairly
+easy to remove this hypothesis.
+
+OUTPUT:
+
+Every time it finds a complete isomorphism class from among the rows of the input file,
+it will write the result to a file in the DATA/sibs_finished directory.  When all input rows have been
+assigned, it will delete the input file.  Timings and memory usage are written to the DATA/isotest.timings/
+folder, and information on the sibling counts are written to the DATA/sibs_with_count/ folder.
+*****************************************************************************************************/
+
+AttachSpec("hashspec");
 
 SetColumns(0);
 cluster_lookup := AssociativeArray();
@@ -8,7 +33,7 @@ first_lookup := AssociativeArray();
 G_lookup := AssociativeArray();
 nTts := [];
 ns := {};
-activefile := "DATA/hashclusters/active/" * hsh;
+activefile := "DATA/active/" * hsh;
 for cluster in Split(Read(activefile), "\n") do
     first := Split(cluster, " ")[1];
     cluster_lookup[first] := cluster;
@@ -62,22 +87,22 @@ while #nTts gt 0 do
     else
         mem := Sprintf("%oGB", RealField(4)!(mem / 2^30));
     end if;
-    PrintFile("DATA/hashclusters/sibs.times/" * hsh, Sprintf("Subs(%o) -> %o -> %o -> %o in %os using %o", label, cnt1, cnt2, #sibs, Cputime() - t0, mem));
+    PrintFile("DATA/sibs.timings/" * hsh, Sprintf("Subs(%o) -> %o -> %o -> %o in %os using %o", label, cnt1, cnt2, #sibs, Cputime() - t0, mem));
     sibs := [<k, v> : k -> v in sibs];
     Sort(~sibs);
     withcount := Join([Sprintf("%oT%o:%o", x[1][1], x[1][2], x[2]) : x in sibs], " ");
     nocount := Join([Sprintf("%oT%o", x[1][1], x[1][2]) : x in sibs], " ");
-    PrintFile("DATA/hashclusters/sibs_finished/" * hsh * "." * label, nocount);
-    PrintFile("DATA/hashclusters/sibs_with_count/" * hsh * "." * label, withcount);
+    PrintFile("DATA/sibs_finished/" * hsh * "." * label, nocount);
+    PrintFile("DATA/sibs_with_count/" * hsh * "." * label, withcount);
     if #nTts gt 1 then
-        tmp := "DATA/hashclusters/tmp/" * hsh;
+        tmp := "DATA/tmp/" * hsh;
         PrintFile(tmp, Join([cluster_lookup[nTt] : nTt in nTts], "\n"));
         System("mv " * tmp * " " * activefile); // mv is atomic
     else
         if #nTts eq 1 then
             print "Writing last";
-            PrintFile("DATA/hashclusters/sibs.times/" * hsh, "One cluster left");
-            PrintFile("DATA/hashclusters/sibs_finished/" * hsh * "." * nTts[1], cluster_lookup[nTts[1]]);
+            PrintFile("DATA/sibs.timings/" * hsh, "One cluster left");
+            PrintFile("DATA/sibs_finished/" * hsh * "." * nTts[1], cluster_lookup[nTts[1]]);
         end if;
         System("rm " * activefile);
         break;

@@ -1,12 +1,30 @@
-AttachSpec("hashspec");
+/*****************************************************************************************************
+This file uses Magma's IsIsomorphic function to determine how a cluster of groups is actually
+divided into isomorphism classes.  It is usually faster than FullSibSplit.m, but not always
+(and it does not provide sibling counts).
 
-// ls DATA/hashclusters/active | parallel -j64 --timeout 3600 --memfree 100G --joblog DATA/hashclusters/isotest.log magma hsh:="{1}" AddTHashes4.m
+USAGE:
+
+ls DATA/active | parallel -j64 --timeout 3600 --memfree 100G --joblog DATA/isotest.log magma hsh:="{1}" FullIsoTest.m
+
+INPUT:
+
+You should provide a variable `hsh` at the command line: the order and hash value, separated by a period.
+
+OUTPUT:
+
+Every time it finds a complete isomorphism class from among the rows of the input file,
+it will write the result to a file in the DATA/isotest_finished directory.  When all input rows have been
+assigned, it will delete the input file.  Timings are written to the DATA/isotest.timings/ folder.
+*****************************************************************************************************/
+
+AttachSpec("hashspec");
 
 SetColumns(0);
 nTt_lookup := AssociativeArray();
 G_lookup := AssociativeArray();
 nTts := [];
-activefile := "DATA/hashclusters/active/" * hsh;
+activefile := "DATA/active/" * hsh;
 for cluster in Split(Read(activefile), "\n") do
     first := Split(cluster, " ")[1];
     nTt_lookup[first] := cluster;
@@ -15,11 +33,11 @@ for cluster in Split(Read(activefile), "\n") do
     Append(~nTts, first);
 end for;
 
-if #nTts gt 6 then
-    // Skip bigger clusters
-    print "Exiting since", #nTts, "clusters";
-    exit;
-end if;
+//if #nTts gt 6 then
+//    // Skip bigger clusters
+//    print "Exiting since", #nTts, "clusters";
+//    exit;
+//end if;
 
 while #nTts gt 0 do
     t0 := Cputime();
@@ -41,10 +59,10 @@ while #nTts gt 0 do
     end while;
     // Since this process may get killed, we want to write output now
     print "Writing progress";
-    PrintFile("DATA/hashclusters/isotest.times/" * hsh, Sprintf("%o size %o(%o), %o", label, #cluster, &+[#Split(x, " ") : x in cluster], Cputime() - t0));
-    PrintFile("DATA/hashclusters/isotest_finished/" * hsh * "." * label, Join(cluster, " "));
+    PrintFile("DATA/isotest.timings/" * hsh, Sprintf("%o size %o(%o), %o", label, #cluster, &+[#Split(x, " ") : x in cluster], Cputime() - t0));
+    PrintFile("DATA/isotest_finished/" * hsh * "." * label, Join(cluster, " "));
     if #nTts gt 0 then
-        tmp := "DATA/hashclusters/tmp/" * hsh;
+        tmp := "DATA/tmp/" * hsh;
         PrintFile(tmp, Join([nTt_lookup[nTt] : nTt in nTts], "\n"));
         System("mv " * tmp * " " * activefile); // mv is atomic
     else

@@ -25,7 +25,31 @@ have been possible:
 
 USAGE:
 
-ls DATA/hashclusters/active | parallel -j96 --timeout 900 magma hsh:="{1}" timeout:=900 TCluster3.m
+ls DATA/active | parallel -j96 --timeout 900 magma hsh:="{1}" timeout:=900 RandomizedMerge.m
+
+INPUT:
+
+You should provide a variable `hsh` at the command line, corresponding to a file in the DATA/active/ directory.
+This file should consist of lines of space separated transitive groups (such as 44T1780);
+all groups on the same line should be isomorphic, and groups on different lines may or may not be isomorphic.
+
+Since the strategry is randomized, it's common to want to rerun multiple times, yet it's also helpful to
+have some indication of progress.  To this end, you must also specify `timeout` on the command line.
+If the active file has already been run with this value of `timeout` it will exit immediately;
+otherwise it will write the value to a corresponding file in the DATA/merge_check directory.
+
+OUTPUT:
+
+If the merging is completely successful and all groups in the input file are found to be isomorphic,
+a file will be created in the DATA/merge_finished directory with a single line containing all group labels,
+and the input file will be DELETED from DATA/active.
+If not, the program will keep running until terminated (GNU parallel with a timeout is a good way to do this).
+Either way, partial progress will be recorded by UPDATING the input file in DATA/active, merging
+lines as appropriate.
+Since the mixture of overwriting the input and automatic termination has the potential for data corruption,
+this is achieved by writing to a DATA/tmp/ directory, then moving the result into place.
+
+Timing information is output to DATA/merge.timings/
 *****************************************************************************************************/
 
 SMALL_TRIES := 40;
@@ -129,12 +153,12 @@ end function;
 SetColumns(0);
 
 print hsh;
-file_exists, ifile := OpenTest("DATA/hashclusters/active/" * hsh, "r");
+file_exists, ifile := OpenTest("DATA/active/" * hsh, "r");
 if not file_exists then
     print "File for", hsh, "does not exist!";
     exit;
 end if;
-cfname := "DATA/hashclusters/merge_check/" * hsh;
+cfname := "DATA/merge_check/" * hsh;
 file_exists, cfile := OpenTest(cfname, "r");
 if file_exists then
     if timeout in Split(Read(cfile)) then
@@ -181,7 +205,7 @@ while true do
     j := lookup[[m, s]];
     if i ne j then
         i, j := Explode([Min(i,j), Max(i,j)]);
-        PrintFile("DATA/hashclusters/merge.timings/" * hsh, Sprintf("%oT%o=%oT%o %o %o %o %o", groups[i][1][1], groups[i][1][2], groups[j][1][1], groups[j][1][2], progress_ctr, failures, total_restarts, Cputime() - t0));
+        PrintFile("DATA/merge.timings/" * hsh, Sprintf("%oT%o=%oT%o %o %o %o %o", groups[i][1][1], groups[i][1][2], groups[j][1][1], groups[j][1][2], progress_ctr, failures, total_restarts, Cputime() - t0));
         groups[i] := Sort(groups[i] cat groups[j]);
         groups[j] := [];
         for k -> v in lookup do
@@ -191,14 +215,14 @@ while true do
         end for;
         Exclude(~active, j);
         lines := Join([Join([Sprintf("%oT%o", tgp[1], tgp[2]) : tgp in groups[k]], " ") : k in active], "\n");
-        activefile := "DATA/hashclusters/active/" * hsh;
+        activefile := "DATA/active/" * hsh;
         if #active eq 1 then
-            PrintFile("DATA/hashclusters/merge_finished/" * hsh, lines);
+            PrintFile("DATA/merge_finished/" * hsh, lines);
             System("rm " * activefile);
             print "Finished!";
             break;
         else
-            tmp := "DATA/hashclusters/tmp/" * hsh;
+            tmp := "DATA/tmp/" * hsh;
             PrintFile(tmp, lines);
             System("mv " * tmp * " " * activefile); // mv is atomic
         end if;
