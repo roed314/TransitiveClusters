@@ -124,7 +124,7 @@ ls DATA/active | parallel -j128 --timeout 3600 magma hsh:="{1}" timeout:=3600 Ra
 ```
 9. If clusters remain, use `IterativeSubgroupSetup.m`, which hasn't been automated and still needs a bit of attention.
 
-The commands above were run on a server with 128 physical cores and 2TB of RAM; they should be modifyed as appropriate to take your resources into account.
+The commands above were run on a server with 128 physical cores and 2TB of RAM; they should be modified as appropriate to take your resources into account.
 
 Assumptions
 ===========
