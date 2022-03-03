@@ -21,7 +21,7 @@ OUTPUT:
 
 Every time it finds a complete isomorphism class from among the rows of the input file,
 it will write the result to a file in the DATA/sibs_finished directory.  When all input rows have been
-assigned, it will delete the input file.  Timings and memory usage are written to the DATA/isotest.timings/
+assigned, it will delete the input file.  Timings and memory usage are written to the DATA/sibs.timings/
 folder, and information on the sibling counts are written to the DATA/sibs_with_count/ folder.
 *****************************************************************************************************/
 

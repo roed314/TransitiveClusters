@@ -24,7 +24,8 @@ OUTPUT:
 It will write a bunch of magma files to the folder DATA/last/ which can then be run to produce output in
 DATA/last.selfsib/ and DATA/last.osib/.  Output in the first case is for generators of core-free subgroups of the
 original group that yield the same transitive label, while in the second case those that give a different
-label.  The output in the second case give isomorphisms with other transitive groups.
+label.  The output in the second case give isomorphisms with other transitive groups.  Note that these scripts
+do not delete files from DATA/active/ or create finalized clusters.
 
 Timing information is printed to files in DATA/last.timings/
 *****************************************************************************************************/
