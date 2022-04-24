@@ -59,6 +59,10 @@ while #nTts gt 0 do
     // Since this process may get killed, we want to write output now
     print "Writing progress";
     PrintFile("DATA/isotest.timings/" * hsh, Sprintf("%o size %o(%o), %o", label, #cluster, &+[#Split(x, " ") : x in cluster], Cputime() - t0));
+    // Can't use label since it might be too big in general
+    if #label gt 30 then
+        label := Sprint(Hash(label[1..#label div 2])) * Sprint(Hash(label[(#label div 2) + 1..#label]));
+    end if;
     PrintFile("DATA/isotest_finished/" * hsh * "." * label, Join(cluster, " "));
     if #nTts gt 0 then
         tmp := "DATA/tmp/" * hsh;
