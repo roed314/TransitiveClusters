@@ -1,4 +1,33 @@
-// Ported from FiniteGroups/Code/utils.m
+// Ported from FiniteGroups/Code/utils.m and lehmer.m
+
+intrinsic DecodePerm(x::RngIntElt, n::RngIntElt) -> GrpPermElt
+    {Given rank x, return corresponding permutation in Sym(n)}
+    return LehmerCodeToPermutation(RankToLehmerCode(x,n));
+end intrinsic;
+
+intrinsic RankToLehmerCode(x::RngIntElt, n::RngIntElt) -> SeqEnum
+  {Returns the Lehmer code for rank x}
+  lehmer := [];
+  for j in [1..n] do
+    Append(~lehmer, x mod j);
+    x := x div j;
+  end for;
+  Reverse(~lehmer);
+  return lehmer;
+end intrinsic;
+
+intrinsic LehmerCodeToPermutation(lehmer::SeqEnum) -> GrpPermElt
+  {Returns permutation corresponding to Lehmer code.}
+  n := #lehmer;
+  lehmer := [el + 1 : el in lehmer];
+  p_seq := [];
+  open_spots := [1..n];
+  for j in lehmer do
+    Append(~p_seq, open_spots[j]);
+    Remove(~open_spots,j);
+  end for;
+  return Sym(n)!p_seq;
+end intrinsic;
 
 // We encode groups using strings that allow for their reconstruction
 // Moved from IO.m so that it could be used while just attaching hashspec
