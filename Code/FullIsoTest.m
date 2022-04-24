@@ -28,8 +28,7 @@ activefile := "DATA/active/" * hsh;
 for cluster in Split(Read(activefile), "\n") do
     first := Split(cluster, " ")[1];
     nTt_lookup[first] := cluster;
-    n, t := Explode([StringToInteger(c) : c in Split(first, "T")]);
-    G_lookup[first] := TransitiveGroup(n, t);
+    G_lookup[first] := StringToGroup(first);
     Append(~nTts, first);
 end for;
 
