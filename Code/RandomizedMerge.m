@@ -1,5 +1,5 @@
 /*****************************************************************************************************
-This file applies a randomized strategy to find isomorphisms between groups in a cluster.
+This file applies a randomized strategy to find isomorphisms between transitive groups in a cluster.
 As an example, 40T194505 and 40T195727 have the same hash (in fact, they end up abstractly isomorphic)
 If we compute a random index-40 core-free subgroup H of 40T194505, we can use TransitiveGroupIdentification
 on the induced permutation representation.  Some of the time, we'll get 195727 out, thus exhibiting an
@@ -25,7 +25,7 @@ have been possible:
 
 USAGE:
 
-ls DATA/active | parallel -j96 --timeout 900 magma hsh:="{1}" timeout:=900 RandomizedMerge.m
+ls DATA/active | parallel -j96 --timeout 900 magma hsh:="{1}" timeout:=900 RandomizedTMerge.m
 
 INPUT:
 
