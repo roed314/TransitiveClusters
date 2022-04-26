@@ -89,15 +89,15 @@ if not file_exists then
     print "File for", hsh, "does not exist!";
     exit;
 end if;
-cfname := "DATA/merge_check/" * hsh;
-cfile := "";
-file_exists, cfile := OpenTest(cfname, "r");
-if file_exists then
-    if timeout in Split(Read(cfile)) then
-        exit;
-    end if;
-end if;
-PrintFile(cfname, timeout);
+//cfname := "DATA/merge_check/" * hsh;
+//cfile := "";
+//file_exists, cfile := OpenTest(cfname, "r");
+//if file_exists then
+//    if timeout in Split(Read(cfile)) then
+//        exit;
+//    end if;
+//end if;
+//PrintFile(cfname, timeout);
 N := StringToInteger(Split(hsh, ".")[1]);
 
 descs := [];
