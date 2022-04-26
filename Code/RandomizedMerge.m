@@ -197,8 +197,9 @@ PrintFile("DATA/merge.timings/" * hsh, Sprintf("Setup done in %o, finished %o", 
 while true do
     i := Random(active);
     G := groups[i];
+
     // Want to weight lower degrees more heavily, so we do the selection manually
-    keys := Sort([x : x in Keys(known_corefree[i])]);
+    /*keys := Sort([x : x in Keys(known_corefree[i])]);
     r := Random(Integers()!(#keys * (#keys + 1) / 2 - 1));
     for i in [1..#keys] do
         r -:= i;
@@ -206,7 +207,10 @@ while true do
             d := keys[#keys+1 - i];
             break;
         end if;
-    end for;
+    end for;*/
+    // Maybe this will work better
+    d := Random(Keys(known_corefree[i]));
+
     H := Random(known_corefree[i][d]);
     K := RandomCorefreeSubgroup(G, H, best_deg);
     if #H ne #K then
