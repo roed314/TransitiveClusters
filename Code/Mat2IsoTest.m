@@ -9,7 +9,7 @@ if not file_exists then
     print "File for", hsh, "does not exist!";
     exit;
 end if;
-descs := Split(Read(ifile), "\n");
+descs := [Split(x, " ")[1] : x in Split(Read(ifile), "\n")];
 groups := [StringToGroup(desc) : desc in descs];
 for i in [1..#groups] do
     G := groups[i];
