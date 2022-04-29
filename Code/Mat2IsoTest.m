@@ -1,6 +1,7 @@
 // There were several 2x2 matrix cases where IsIsomophic and RandomizedMerge.m both failed.  This script takes advantage of the structure of matrix groups to handle these cases.
 
 SetColumns(0);
+AttachSpec("hashspec");
 
 activefile := "DATA/active/" * hsh;
 file_exists, ifile := OpenTest("DATA/active/" * hsh, "r");
