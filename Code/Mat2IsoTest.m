@@ -37,11 +37,14 @@ for i in [1..#groups] do
                 // Borel
                 C := AbelianGroup([N-1]);
                 ahom := hom<A -> C | [<a, Log(k!Eltseq(m1101^a)[2])*C.1> : a in Generators(A)]>;
-                if #Image(ahom) eq N-1 then
+                iord := #Image(ahom);
+                if iord eq N-1 then
                     print "ok";
                 else
-                    lift := (((N-1) div #Image(ahom)) * C.1) @@ ahom;
-                    if Order(lift) eq N-1 then
+                    K := Kernel(ahom);
+                    comps := Complements(A, K);
+                    //lift := (((N-1) div iord) * C.1) @@ ahom;
+                    if #comps gt 0 then
                        print "split Borel";
                     else
                         print "nonsplit Borel";
