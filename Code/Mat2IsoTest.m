@@ -11,6 +11,7 @@ if not file_exists then
 end if;
 descs := [Split(x, " ")[1] : x in Split(Read(ifile), "\n")];
 groups := [StringToGroup(desc) : desc in descs];
+Zids := [];
 for i in [1..#groups] do
     G := groups[i];
     if Type(G) eq GrpMat and Degree(G) eq 2 then
@@ -51,6 +52,7 @@ for i in [1..#groups] do
             end if;
         else
             Z := G meet Center(GL(2, Integers(N)));
+            Append(~Zids, IdentifyGroup(Z));
             C := Complements(G, Z);
             if #C gt 0 then
                 print "split";
@@ -60,3 +62,6 @@ for i in [1..#groups] do
         end if;
     end if;
 end for;
+if #Zids gt 0 then
+    print hsh, "Zids", Zids;
+end if;
