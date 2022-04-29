@@ -17,7 +17,9 @@ for i in [1..#groups] do
         print hsh, i;
         R := CoefficientRing(G);
         N := #R;
-        if IsPrime(N) then
+        if IsAbelian(G) then
+            print "abelian";
+        elif IsPrime(N) then
             k := GF(N);
             Agens := [];
             found := false;
@@ -37,7 +39,12 @@ for i in [1..#groups] do
                 if #Image(ahom) eq N-1 then
                     print "ok";
                 else
-                    print "not surjective";
+                    lift := (((N-1) div #Image(ahom)) * C.1) @@ ahom;
+                    if Order(lift) eq Order(N-1)
+                       print "split Borel";
+                    else
+                        print "nonsplit Borel";
+                    end if;
                 end if;
             else
                 print "not Borel";
