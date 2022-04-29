@@ -29,7 +29,7 @@ for i in [1..#groups] do
                     Append(#Agens, g);
                 end if;
             end for;
-            A := sub<A|Agens>;
+            A := sub<G|Agens>;
             if found and IsAbelian(A) then
                 // Borel
                 C := AbelianGroup([N-1]);
