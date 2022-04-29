@@ -26,7 +26,7 @@ for i in [1..#groups] do
                 if g eq m1101 then
                     found := true;
                 else
-                    Append(#Agens, g);
+                    Append(~Agens, g);
                 end if;
             end for;
             A := sub<G|Agens>;
