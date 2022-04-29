@@ -40,7 +40,7 @@ for i in [1..#groups] do
                     print "ok";
                 else
                     lift := (((N-1) div #Image(ahom)) * C.1) @@ ahom;
-                    if Order(lift) eq Order(N-1)
+                    if Order(lift) eq Order(N-1) then
                        print "split Borel";
                     else
                         print "nonsplit Borel";
