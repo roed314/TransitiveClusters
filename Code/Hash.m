@@ -164,11 +164,7 @@ intrinsic HashCluster(nTts::[MonStgElt]) -> LMFDBHashCluster
 {}
     HC := New(LMFDBHashCluster);
     assert #nTts gt 0;
-    Grps := [];
-    for nTt in nTts do
-        n, t := Explode([StringToInteger(c) : c in Split(nTt, "T")]);
-        Append(~Grps, TransitiveGroup(n, t));
-    end for;
+    Grps := [StringToGroup(desc) : desc in nTts];
     HC`nTts := nTts;
     HC`Grps := Grps;
     HC`hashes := [[] : _ in Grps];
