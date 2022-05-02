@@ -17,6 +17,7 @@ if &and[IsAbelian(G) : G in groups] then
     // The hash should be enough to distinguish in this case, but we double check
     invs := {AbelianInvariants(G) : G in groups};
     assert #invs eq 1;
+    print "Writing abelian output for", hsh;
     PrintFile("DATA/mat2_finished/" * hsh, Join(descs, " "));
     System("rm " * activefile);
     exit;
@@ -63,6 +64,7 @@ if &and[Type(G) eq GrpMat and Degree(G) eq 2 and #ps eq 1 and IsPrime(ps[1]) : G
         // If K has index p-1 in A then the sequence is automatically a direct summand since T has exponent dividing p-1.
         if #invs eq 1 and (Index(As[1], Ks[1]) eq p-1 or &and[#Complements(As[i], Ks[i]) gt 0 : i in [1..#As]]) then
             // Success!
+            print "Writing Borel output for", hsh;
             PrintFile("DATA/mat2_finished/" * hsh, Join(descs, " "));
             System("rm " * activefile);
             exit;
@@ -93,7 +95,7 @@ if #P gt 1 and &and[IsNormal(G, SylowSubgroup(G, p)) : G in groups, p in P] then
             end if;
         end while;
         // This process may get killed, so we write output
-        print "Writing progress";
+        print "Writing Sylow progress for", hsh, #active;
         PrintFile("DATA/sylow.timings/" * hsh, Sprintf("%o size %o(%o), %o", label, #cluster, &+[#Split(x, " ") : x in cluster], Cputime() - t0));
         // Can't use label since it might be too big in general
         if #label gt 30 then
@@ -136,7 +138,7 @@ if &and[Type(G) eq GrpMat : G in groups] then
                 end if;
             end while;
             // This process may get killed, so we write output
-            print "Writing progress";
+            print "Writing proj progress for", hsh, #active;
             PrintFile("DATA/proj.timings/" * hsh, Sprintf("%o size %o(%o), %o", label, #cluster, &+[#Split(x, " ") : x in cluster], Cputime() - t0));
             // Can't use label since it might be too big in general
             if #label gt 30 then
