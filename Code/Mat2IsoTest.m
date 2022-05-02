@@ -21,8 +21,12 @@ if &and[IsAbelian(G) : G in groups] then
     System("rm " * activefile);
     exit;
 end if;
-if &and[Type(G) eq GrpMat and Degree(G) eq 2 and IsPrime(#CoefficientRing(G)) : G in groups] then
-    p := #CoefficientRing(G);
+ps := {};
+if &and[Type(G) eq GrpMat] then
+    ps := {@ #CoefficientRing(G) : G groups @};
+end if;
+if &and[Type(G) eq GrpMat and Degree(G) eq 2 and #ps eq 1 and IsPrime(ps[1]) : G in groups] then
+    p := ps[1];
     k := GF(p);
     allborel := true;
     As := [];
@@ -71,7 +75,7 @@ if #P gt 1 and &and[IsNormal(G, SylowSubgroup(G, p)) : G in groups, p in P] then
     active := [1..#groups];
     while #active gt 0 do
         t0 := Cputime();
-        cluster := [active[1]];
+        cluster := [descs[active[1]]];
         label := Split(descs[active[1]], " ")[1];
         G := groups[active[1]];
         SylG := [SylowSubgroup(G, p) : p in P];
@@ -116,7 +120,7 @@ if &and[Type(G) eq GrpMat : G in groups] then
         active := [1..#groups];
         Qs := [groups[i] / Zs[i] : i in [1..#groups]];
         while #active gt 0 do
-            cluster := [active[1]];
+            cluster := [descs[active[1]]];
             label := Split(descs[active[1]], " ")[1];
             G := Qs[active[1]];
             active := active[2..#active];
