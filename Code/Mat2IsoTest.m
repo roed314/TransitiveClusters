@@ -22,7 +22,7 @@ if &and[IsAbelian(G) : G in groups] then
     exit;
 end if;
 ps := {};
-if &and[Type(G) eq GrpMat] then
+if &and[Type(G) eq GrpMat : G in groups] then
     ps := {@ #CoefficientRing(G) : G in groups @};
 end if;
 if &and[Type(G) eq GrpMat and Degree(G) eq 2 and #ps eq 1 and IsPrime(ps[1]) : G in groups] then
