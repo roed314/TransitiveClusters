@@ -21,7 +21,7 @@ AttachSpec("hashspec");
 inputs := Split(Read(infile), "\n");
 gps := [StringToGroup(desc) : desc in inputs];
 hshs := [EasyHash(G) : G in gps];
-matches = [i : i in [1..#inputs] | hshs[i] eq hshs[1]];
+matches := [i : i in [1..#inputs] | hshs[i] eq hshs[1]];
 for i in matches do
     PrintFile(outfile, inputs[i]);
 end for;
